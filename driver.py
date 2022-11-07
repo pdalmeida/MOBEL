@@ -8,6 +8,7 @@ import msgParser
 import carState
 import carControl
 import math
+import matplotlib as plt
 
 class Driver(object):
     '''
@@ -61,9 +62,9 @@ class Driver(object):
 
     def steer(self):
         angle = self.state.angle
-        dist = self.state.trackPos
+        trackPos = self.state.trackPos
         
-        self.control.setSteer((angle - dist*0.5)/self.steer_lock)
+        self.control.setSteer(angle - trackPos*0.5)
     
     def gear(self):
         rpm = self.state.getRpm()
@@ -102,12 +103,16 @@ class Driver(object):
         self.control.setAccel(accel)
         """
 
-        dist = self.state.getTrackPos()
+        trackPos = self.state.getTrackPos()
+        print('POS:' + str(trackPos))
 
-        if dist < 1 and dist > -1:
+        if trackPos < 1 and trackPos > -1:
             rSensor = self.state.getTrack(10)   #+5 degrees
             cSensor = self.state.getTrack(9)
             lSensor = self.state.getTrack(8)    #-5 degrees
+
+            print('LS: ' + str(lSensor) + ' CS: ' + str(cSensor) + ' RS: ' + str(rSensor))
+            
 
             if cSensor > self.maxSpeedDist or (cSensor >= rSensor and cSensor >=lSensor):
                 targetSpeed = self.max_speed

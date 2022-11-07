@@ -4,6 +4,7 @@ Created on Apr 5, 2012
 @author: lanquarden
 '''
 import msgParser
+import matplotlib.pyplot as plt
 
 class CarState(object):
     '''
@@ -250,6 +251,8 @@ class CarState(object):
     
     def setTrack(self, track):
         self.track = track
+        plt.hist(track)
+        plt.show()
     
     def setTrackD(self):
         self.track = self.getFloatListD('track')
