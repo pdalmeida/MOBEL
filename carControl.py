@@ -24,6 +24,7 @@ class CarControl(object):
         self.clutch = clutch
         self.focus = focus
         self.meta = meta
+        self.currAccel = 0
     
     def toMsg(self):
         self.actions = {}
@@ -39,10 +40,17 @@ class CarControl(object):
         return self.parser.stringify(self.actions)
     
     def setAccel(self, accel):
+        print(accel)
         self.accel = accel
     
     def getAccel(self):
         return self.accel
+
+    def setCurrAccel(self, accel):
+        self.currAccel = accel
+    
+    def getCurrAccel(self):
+        return self.currAccel
     
     def setBrake(self, brake):
         self.brake = brake

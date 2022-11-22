@@ -27,6 +27,8 @@ class Driver(object):
         self.max_speed = 170
         self.maxSpeedDist  = 70
         self.prev_rpm = None
+
+
     
     def init(self):
         '''Return init string with rangefinder angles'''
@@ -42,6 +44,7 @@ class Driver(object):
         
         return self.parser.stringify({'init': self.angles})
     
+
     def drive(self, msg):
         self.state.setFromMsg(msg)
         
@@ -61,6 +64,13 @@ class Driver(object):
         cSensor = self.state.getTrack(9)
         lSensor = self.state.getTrack(8)    #-5 degrees
 
+        self.accel = 0
+        self.gear = self.state.gear
+        brakingZone = self.state.m
+
+
+
+        '''
         #self.control.setSteer(angle - trackPos*0.5)
 
         #print('LS: ' + str(lSensor) + ' CS: ' + str(cSensor) + ' RS: ' + str(rSensor))
@@ -82,6 +92,7 @@ class Driver(object):
                 self.control.setSteer(0.02)
             else:   
                 self.control.setSteer(0)
+        '''
 
                 
 

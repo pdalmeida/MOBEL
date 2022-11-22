@@ -4,7 +4,7 @@ Created on Apr 5, 2012
 @author: lanquarden
 '''
 import msgParser
-import matplotlib.pyplot as plt
+import math as m
 
 class CarState(object):
     '''
@@ -83,6 +83,37 @@ class CarState(object):
         self.sensors['z'] = [self.z]
         
         return self.parser.stringify(self.sensors)
+    
+    def clamp (self,val, vMin, vMax): 
+        return max(vMin, min(val, vMax))
+
+
+    def getSpeed(self):
+        return m.sqrt(m.pow(self.speedX,2) + m.pow(self.speedY,2))
+
+    def getMaxDistance(self):
+        return self.track[self.getMaxDistanceSensor()]
+
+
+    # Return sensor angle in degrees from vechicle longtitudial centerline to sensor. 
+    # Positive angles in clockwise direction. Negative angles in counter-clockwise 
+    # direction.
+    def getMaxDistanceAngle(self):
+
+        return self.getMaxDistanceSensor() * 10 - 90
+    
+
+    #Get the maximum distance sensor reading in meters
+    def getMaxDistanceSensor(self):
+        #find max distance sensor
+        maxSens = 0
+        for i in range(1,len(self.track)):
+            if self.track[i] > self.track[maxSens]:
+                maxSens = i
+        return maxSens
+
+    
+
     
     def getFloatD(self, name):
         try:
@@ -227,6 +258,7 @@ class CarState(object):
     
     def setSpeedXD(self):
         self.speedX = self.getFloatD('speedX')
+
     
     def getSpeedX(self):
         return self.speedX
@@ -251,14 +283,12 @@ class CarState(object):
     
     def setTrack(self, track):
         self.track = track
-        plt.hist(track)
-        plt.show()
     
     def setTrackD(self):
         self.track = self.getFloatListD('track')
     
-    def getTrack(self,i):
-        return self.track[i]
+    def getTrack(self):
+        return self.track
     
     def setTrackPos(self, trackPos):
         self.trackPos = trackPos
