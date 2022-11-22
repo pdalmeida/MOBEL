@@ -45,13 +45,13 @@ class Driver(object):
         self.EDGE_STEER = 0.0075
 
         self.DEF_MIN_SPEED = 50
-        self.DEF_MAX_SPEED = 250
+        self.DEF_MAX_SPEED = 275
 
         self.GEAR_MAX = 6
         self.RPM_MAX = 8000
         self.ACCEL_MAX = 1.0
         self.ACCEL_DELTA = 0.5          #maximum rate of change in acceleration signal, avoid spinning out
-        self.BRAKE_MAX = -0.5           #braking signal <= BRAKING_MAX 
+        self.BRAKE_MAX = -0.5          #braking signal <= BRAKING_MAX 
         self.BRAKE_DELTA = 0.05         #dampen braking to avoid lockup, max rate of chage in braking
         self.WSPIN_ACCEL_DELTA = 0.025
         self.WSPIN_MAX = 5.0            #greater than this value --> loss of control
@@ -73,13 +73,28 @@ class Driver(object):
     
     def drive(self, msg):
         self.state.setFromMsg(msg)
+        ''''''
+        if abs(self.state.angle) > m.pi/6:
+            self.stuck = self.stuck+1
+        else:
+            self.stuck = 0
+        if self.stuck > 25:
+            steer = -self.state.angle/0.366519
+            gear = -1
+
+            if self.state.angle*self.state.trackPos>0:
+                gear = 1
+                steer = -steer
+            self.control.setSteer(steer)
+            self.control.setGear(gear)
+            self.control.setAccel(0.3)
+        else:
         
-        self.steer()
-        
-        self.gear()
-        
-        self.speed()
-        
+            self.steer()
+            
+            self.gear()
+            
+            self.speed()
         return self.control.toMsg()
     
     def steer(self):
@@ -93,9 +108,9 @@ class Driver(object):
 
         target_angle = self.computeTargetAngle()
         # alpha (a) = angle of longest sensor (... -20, -10, 0, 10, 20, ...)
-        rawSteeringAngle = - m.atan(self.PP_2L * m.sin(target_angle) / (self.PP_K * self.state.getSpeed()))
+        rawSteeringAngle = - m.atan(self.PP_2L * m.sin(target_angle) / (self.PP_K * (self.state.getSpeed()+1)))
         # normalize between [-1,1]
-        normalizedSteeringAngle = self.state.clamp(rawSteeringAngle/self.MAX_STEER_ANGLE,-1.0,1.0)
+        normalizedSteeringAngle = self.state.clamp(rawSteeringAngle/self.MAX_STEER_ANGLE,-1.0*0.9,1.0*0.9)
         #print(normalizedSteeringAngle)
         self.control.setSteer(normalizedSteeringAngle*100)
 
@@ -116,21 +131,6 @@ class Driver(object):
         return targetAngle
 
     def speed(self):
-        '''
-        speed = self.state.getSpeedX()
-        accel = self.control.getAccel()
-        
-        if speed < self.max_speed:
-            accel += 0.1
-            if accel > 1:
-                accel = 1.0
-        else:
-            accel -= 0.1
-            if accel < 0:
-                accel = 0.0
-        
-        self.control.setAccel(accel)
-        '''
 
         brakingZone = self.state.getMaxDistance() < (self.state.speedX / 1.5)
         targetSpeed = 0
@@ -141,27 +141,25 @@ class Driver(object):
         else:
             targetSpeed = self.DEF_MAX_SPEED
 
+              #wheel spin velocity
         '''
-        #wheel spin velocity
         wheelSpinVelocity = self.state.getWheelSpinVel()
         frontWheelAvgSpeed = (wheelSpinVelocity[0] + wheelSpinVelocity[1]) / 2.0
         rearWheelAvgSpeed = (wheelSpinVelocity[2] + wheelSpinVelocity[3]) / 2.0
-        if rearWheelAvgSpeed != 0:
-           slippagePercent = frontWheelAvgSpeed / rearWheelAvgSpeed * 100.0
+        if self.state.getSpeedX() > 5.0:
+           slippagePercent = frontWheelAvgSpeed / (rearWheelAvgSpeed+0.1) * 100.0
 
         wheelSpinDelta = abs((frontWheelAvgSpeed / 2) - (rearWheelAvgSpeed/ 2))   
-        hasWheelSpin = self.state.getSpeedX() > 5.0 and slippagePercent < 80.00
+        hasWheelSpin = self.state.getSpeedX() > 10.0 and slippagePercent < 80
         if hasWheelSpin:
             accel = self.control.getCurrAccel() - self.WSPIN_ACCEL_DELTA
             self.control.setCurrAccel(accel)
-          
-        else:  
-        '''    
-
-
+        else:   
         #
         # CONTROLO PID
-        pid = PID(1,1,5,targetSpeed)        #kp, ki, kd, ref
+        '''
+
+        pid = PID(2,5,5,targetSpeed)        #kp, ki, kd, ref
         accel = pid(self.state.getSpeed())
 
         accel = self.state.clamp(accel,self.BRAKE_MAX,self.ACCEL_MAX)
@@ -220,7 +218,7 @@ class Driver(object):
 
 
 
-
+        
 
         if accel > 0.7 and rpm > 8000:
             gear += 1
@@ -228,7 +226,7 @@ class Driver(object):
             gear -= 1
 
         self.control.setGear(gear)
-
+        
 
         '''
         if self.prev_rpm == 0:
