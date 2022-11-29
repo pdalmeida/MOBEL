@@ -42,7 +42,7 @@ class Driver(object):
         self.MAX_STEER_ANGLE = 21
 
         self.EDGE_MAX_POS = 0.85
-        self.EDGE_STEER = 0.0075
+        self.EDGE_STEER = 0.00075
 
         self.DEF_MIN_SPEED = 50
         self.DEF_MAX_SPEED = 275
@@ -159,7 +159,7 @@ class Driver(object):
         # CONTROLO PID
         '''
 
-        pid = PID(2,5,5,targetSpeed)        #kp, ki, kd, ref
+        pid = PID(1,2,5,targetSpeed)        #kp, ki, kd, ref
         accel = pid(self.state.getSpeed())
 
         accel = self.state.clamp(accel,self.BRAKE_MAX,self.ACCEL_MAX)

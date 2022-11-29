@@ -79,7 +79,7 @@ while not shutdownClient:
 
 
 
-        if buf.find('***identified***') >= 0:
+        if buf.find('***identified***') >= 0:   
             print('Received: ', buf)
             break
 
