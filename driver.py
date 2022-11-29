@@ -46,7 +46,7 @@ class Driver(object):
 
         self.DEF_MIN_SPEED = 50
         self.DEF_MAX_SPEED = 275
-        self.speed_OFF = 2.5
+        self.speed_OFF = 1.85
         self.KP = 1 
         self.KI = 5
         self.KD = 0.1
@@ -147,28 +147,23 @@ class Driver(object):
             targetSpeed = self.DEF_MAX_SPEED
 
               #wheel spin velocity
-        '''
+        
         wheelSpinVelocity = self.state.getWheelSpinVel()
         frontWheelAvgSpeed = (wheelSpinVelocity[0] + wheelSpinVelocity[1]) / 2.0
         rearWheelAvgSpeed = (wheelSpinVelocity[2] + wheelSpinVelocity[3]) / 2.0
-        if self.state.getSpeedX() > 5.0:
-           slippagePercent = frontWheelAvgSpeed / (rearWheelAvgSpeed+0.1) * 100.0
-
-        wheelSpinDelta = abs((frontWheelAvgSpeed / 2) - (rearWheelAvgSpeed/ 2))   
-        hasWheelSpin = self.state.getSpeedX() > 10.0 and slippagePercent < 80
+        if (self.state.getSpeedX() > 10.0):
+            slippagePercent = frontWheelAvgSpeed / (rearWheelAvgSpeed+0.0001) * 100.0
+            hasWheelSpin = slippagePercent < 85
         if hasWheelSpin:
-            accel = self.control.getCurrAccel() - self.WSPIN_ACCEL_DELTA
+            accel = 0.0
             self.control.setCurrAccel(accel)
         else:   
         #
         # CONTROLO PID
-        '''
-
-        pid = PID(self.KP,self.KI,self.KD,targetSpeed)        #kp, ki, kd, ref
-        accel = pid(self.state.getSpeed())
-        accel = self.state.clamp(accel,self.BRAKE_MAX,self.ACCEL_MAX)
-        self.control.setCurrAccel(accel)
-
+            pid = PID(self.KP,self.KI,self.KD,targetSpeed)        #kp, ki, kd, ref
+            accel = pid(self.state.getSpeed())
+            accel = self.state.clamp(accel,self.BRAKE_MAX,self.ACCEL_MAX)
+            self.control.setCurrAccel(accel)
         if accel > 0.0:
             self.control.setAccel(accel)
             self.control.setBrake(0)
@@ -179,7 +174,7 @@ class Driver(object):
             self.control.setAccel(0.0)
             self.control.setBrake(0.0)
     
-
+    
 
 
     def gear(self):

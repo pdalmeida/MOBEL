@@ -40,7 +40,7 @@ class CarControl(object):
         return self.parser.stringify(self.actions)
     
     def setAccel(self, accel):
-
+        print(accel)
         self.accel = accel
     
     def getAccel(self):

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 '''
 Created on Apr 4, 2012
-
+    
 @author: lanquarden
 '''  
 import sys
@@ -22,7 +22,7 @@ parser.add_argument('--port', action='store', type=int, dest='host_port', defaul
 parser.add_argument('--id', action='store', dest='id', default='SCR',
                     help='Bot ID (default: SCR)')
 parser.add_argument('--maxEpisodes', action='store', dest='max_episodes', type=int, default=1,
-                    help='Maximum number of learning episodes (default: 1)')
+                    help='Maximum -number of learning episodes (default: 1)')
 parser.add_argument('--maxSteps', action='store', dest='max_steps', type=int, default=0,
                     help='Maximum number of steps (default: 0)')
 parser.add_argument('--track', action='store', dest='track', default=None,
