@@ -61,7 +61,6 @@ class CarState(object):
     
     def toMsg(self):
         self.sensors = {}
-        
         self.sensors['angle'] = [self.angle]
         self.sensors['curLapTime'] = [self.curLapTime]
         self.sensors['damage'] = [self.damage]
@@ -258,7 +257,6 @@ class CarState(object):
     
     def setSpeedXD(self):
         self.speedX = self.getFloatD('speedX')
-
     
     def getSpeedX(self):
         return self.speedX

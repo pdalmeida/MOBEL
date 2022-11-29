@@ -36,16 +36,21 @@ class Driver(object):
         self.prev_rpm = 0
         self.RAD2DEG = m.pi / 180.0
         self.DEG2RAD = 1.0 / self.RAD2DEG
-        self.PP_K = 0.50                      # bias - increase to reduce steering sensivity
+        self.PP_K = 0.50                   # bias - increase to reduce steering sensivity
         self.PP_L = 2.4                         # aprox vehicle wheelbase
         self.PP_2L = 2 * self.PP_L
         self.MAX_STEER_ANGLE = 21
 
         self.EDGE_MAX_POS = 0.85
-        self.EDGE_STEER = 0.00075
+        self.EDGE_STEER = 0.0075   
 
         self.DEF_MIN_SPEED = 50
         self.DEF_MAX_SPEED = 275
+        self.speed_OFF = 2.5
+        self.KP = 1 
+        self.KI = 5
+        self.KD = 0.1
+
 
         self.GEAR_MAX = 6
         self.RPM_MAX = 8000
@@ -110,7 +115,7 @@ class Driver(object):
         # alpha (a) = angle of longest sensor (... -20, -10, 0, 10, 20, ...)
         rawSteeringAngle = - m.atan(self.PP_2L * m.sin(target_angle) / (self.PP_K * (self.state.getSpeed()+1)))
         # normalize between [-1,1]
-        normalizedSteeringAngle = self.state.clamp(rawSteeringAngle/self.MAX_STEER_ANGLE,-1.0*0.9,1.0*0.9)
+        normalizedSteeringAngle = self.state.clamp(rawSteeringAngle/self.MAX_STEER_ANGLE,-1.0,1.0)
         #print(normalizedSteeringAngle)
         self.control.setSteer(normalizedSteeringAngle*100)
 
@@ -137,7 +142,7 @@ class Driver(object):
         hasWheelSpin = False
 
         if (brakingZone):
-            targetSpeed = max(self.DEF_MIN_SPEED,self.state.getMaxDistance())
+            targetSpeed = max(self.DEF_MIN_SPEED,self.state.getMaxDistance()*self.speed_OFF)
         else:
             targetSpeed = self.DEF_MAX_SPEED
 
@@ -159,9 +164,8 @@ class Driver(object):
         # CONTROLO PID
         '''
 
-        pid = PID(1,2,5,targetSpeed)        #kp, ki, kd, ref
+        pid = PID(self.KP,self.KI,self.KD,targetSpeed)        #kp, ki, kd, ref
         accel = pid(self.state.getSpeed())
-
         accel = self.state.clamp(accel,self.BRAKE_MAX,self.ACCEL_MAX)
         self.control.setCurrAccel(accel)
 
@@ -174,6 +178,7 @@ class Driver(object):
         else:
             self.control.setAccel(0.0)
             self.control.setBrake(0.0)
+    
 
 
 
@@ -214,11 +219,6 @@ class Driver(object):
                 gear-=1
 
         self.control.setGear(gear)
-
-
-
-
-        
 
         if accel > 0.7 and rpm > 8000:
             gear += 1

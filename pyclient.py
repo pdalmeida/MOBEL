@@ -86,7 +86,7 @@ while not shutdownClient:
     currentStep = 0
     
     while True:
-        # wait for an answer from server
+        # wait for an answer from server        
         buf = None
         try:
             buf, addr = sock.recvfrom(1000)
