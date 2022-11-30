@@ -41,18 +41,15 @@ class Driver(object):
         self.PP_2L = 2 * self.PP_L
         self.MAX_STEER_ANGLE = 21
 
-<<<<<<< HEAD
         self.EDGE_MAX_POS = 0.85
-||||||| c910c99
-        self.EDGE_MAX_POS = 0.70
-=======
-        self.EDGE_MAX_POS = 0.75
->>>>>>> 148582534ac7da9a840d463e1dfd3bde23802d08
         self.EDGE_STEER = 0.0075   
 
         self.DEF_MIN_SPEED = 50
         self.DEF_MAX_SPEED = 275
-        self.speed_OFF = 1.85
+        self.speed_OFF = 2
+        self.KP = 0.05
+        self.KI = 0.001
+        self.KD = 3
 
 
         self.GEAR_MAX = 6
@@ -164,10 +161,11 @@ class Driver(object):
         else:   
         #
         # CONTROLO PID
-            pid = PID(0.05,0.001,3,targetSpeed)        #kp, ki, kd, ref
+            pid = PID(self.KP,self.KI,self.KD,targetSpeed)        #kp, ki, kd, ref
             accel = pid(self.state.getSpeed())
             accel = self.state.clamp(accel,self.BRAKE_MAX,self.ACCEL_MAX)
             self.control.setCurrAccel(accel)
+        
         if accel > 0.0:
             self.control.setAccel(accel)
             self.control.setBrake(0)
@@ -177,9 +175,6 @@ class Driver(object):
         else:
             self.control.setAccel(0.0)
             self.control.setBrake(0.0)
-    
-    
-
 
     def gear(self):
         
@@ -189,7 +184,7 @@ class Driver(object):
         speed = self.state.getSpeedX()
 
         if gear == 1:
-            if rpm > 5000:
+            if rpm > 6000:
                 gear+=1
             elif rpm < 1000:
                 gear-=1

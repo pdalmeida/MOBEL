@@ -55,7 +55,7 @@ curEpisode = 0
 
 verbose = False
 
-d = driver.Driver(arguments.stage)
+d = driver.Driver(arguments.stage)  
 
 while not shutdownClient:
     while True:
