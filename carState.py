@@ -91,6 +91,7 @@ class CarState(object):
         return m.sqrt(m.pow(self.speedX,2) + m.pow(self.speedY,2))
 
     def getMaxDistance(self):
+        print(self.track[self.getMaxDistanceSensor()])
         return self.track[self.getMaxDistanceSensor()]
 
 

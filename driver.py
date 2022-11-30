@@ -41,7 +41,7 @@ class Driver(object):
         self.PP_2L = 2 * self.PP_L
         self.MAX_STEER_ANGLE = 21
 
-        self.EDGE_MAX_POS = 0.85
+        self.EDGE_MAX_POS = 0.70
         self.EDGE_STEER = 0.0075   
 
         self.DEF_MIN_SPEED = 50
@@ -137,12 +137,19 @@ class Driver(object):
 
     def speed(self):
 
+<<<<<<< HEAD
         brakingZone = self.state.getMaxDistance() < (self.state.speedX / 1.45)
+||||||| 937debd
+        brakingZone = self.state.getMaxDistance() < (self.state.speedX / 1.5)
+=======
+        brakingZone = self.state.getMaxDistance() < (self.state.speedX/1.5)
+>>>>>>> c910c99598cdee921a5222478038b17cf30bfa42
         targetSpeed = 0
         hasWheelSpin = False
 
         if (brakingZone):
             targetSpeed = max(self.DEF_MIN_SPEED,self.state.getMaxDistance()*self.speed_OFF)
+            print("brakingZone")
         else:
             targetSpeed = self.DEF_MAX_SPEED
 
@@ -160,7 +167,7 @@ class Driver(object):
         else:   
         #
         # CONTROLO PID
-            pid = PID(self.KP,self.KI,self.KD,targetSpeed)        #kp, ki, kd, ref
+            pid = PID(0.1,0.001,3,targetSpeed)        #kp, ki, kd, ref
             accel = pid(self.state.getSpeed())
             accel = self.state.clamp(accel,self.BRAKE_MAX,self.ACCEL_MAX)
             self.control.setCurrAccel(accel)
@@ -168,7 +175,7 @@ class Driver(object):
             self.control.setAccel(accel)
             self.control.setBrake(0)
         elif accel < 0.0:
-            self.control.setAccel(0)
+            #self.control.setAccel(0)
             self.control.setBrake(abs(accel))
         else:
             self.control.setAccel(0.0)
@@ -185,7 +192,7 @@ class Driver(object):
         speed = self.state.getSpeedX()
 
         if gear == 1:
-            if rpm > 5000:
+            if rpm > 9000:
                 gear+=1
             elif rpm < 1000:
                 gear-=1
@@ -197,7 +204,7 @@ class Driver(object):
         elif gear == 3:
             if rpm > 7000:
                 gear+=1
-            elif rpm < 4000:
+            elif rpm < 3000:
                 gear-=1        
         elif gear == 4:
             if rpm > 7000:
@@ -213,7 +220,7 @@ class Driver(object):
             if rpm < 4000:
                 gear-=1
 
-        self.control.setGear(gear)
+
 
         if accel > 0.7 and rpm > 8000:
             gear += 1
