@@ -38,7 +38,7 @@ print('Bot ID:', arguments.id)
 print('Maximum episodes:', arguments.max_episodes)
 print('Maximum steps:', arguments.max_steps)
 print('Track:', arguments.track)
-print('Stage:', arguments.stage)
+print('Stage:', arguments.stage)    
 print('*********************************************')
 
 try:
