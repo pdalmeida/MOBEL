@@ -161,7 +161,13 @@ class Driver(object):
         else:   
         #
         # CONTROLO PID
+<<<<<<< HEAD
             pid = PID(self.KP,self.KI,self.KD,targetSpeed)        #kp, ki, kd, ref
+||||||| 1485825
+            pid = PID(0.05,0.001,3,targetSpeed)        #kp, ki, kd, ref
+=======
+            pid = PID(0.2,0.001,5,targetSpeed)        #kp, ki, kd, ref
+>>>>>>> a49528e765bef10ec848684d3a29a105130c4834
             accel = pid(self.state.getSpeed())
             accel = self.state.clamp(accel,self.BRAKE_MAX,self.ACCEL_MAX)
             self.control.setCurrAccel(accel)
