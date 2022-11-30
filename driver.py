@@ -46,7 +46,7 @@ class Driver(object):
 
         self.DEF_MIN_SPEED = 50
         self.DEF_MAX_SPEED = 275
-        self.speed_OFF = 1.85
+        self.speed_OFF = 2.1
         self.KP = 1 
         self.KI = 5
         self.KD = 0.1
@@ -137,7 +137,7 @@ class Driver(object):
 
     def speed(self):
 
-        brakingZone = self.state.getMaxDistance() < (self.state.speedX / 1.5)
+        brakingZone = self.state.getMaxDistance() < (self.state.speedX / 1.45)
         targetSpeed = 0
         hasWheelSpin = False
 
@@ -146,7 +146,7 @@ class Driver(object):
         else:
             targetSpeed = self.DEF_MAX_SPEED
 
-              #wheel spin velocity
+        #wheel spin velocity
         
         wheelSpinVelocity = self.state.getWheelSpinVel()
         frontWheelAvgSpeed = (wheelSpinVelocity[0] + wheelSpinVelocity[1]) / 2.0
@@ -155,7 +155,7 @@ class Driver(object):
             slippagePercent = frontWheelAvgSpeed / (rearWheelAvgSpeed+0.0001) * 100.0
             hasWheelSpin = slippagePercent < 85
         if hasWheelSpin:
-            accel = 0.0
+            accel = 0.5
             self.control.setCurrAccel(accel)
         else:   
         #
