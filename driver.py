@@ -158,7 +158,7 @@ class Driver(object):
         else:   
         #
         # CONTROLO PID
-            pid = PID(0.05,0.001,3,targetSpeed)        #kp, ki, kd, ref
+            pid = PID(0.2,0.001,5,targetSpeed)        #kp, ki, kd, ref
             accel = pid(self.state.getSpeed())
             accel = self.state.clamp(accel,self.BRAKE_MAX,self.ACCEL_MAX)
             self.control.setCurrAccel(accel)
