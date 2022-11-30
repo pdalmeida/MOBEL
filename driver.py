@@ -41,15 +41,12 @@ class Driver(object):
         self.PP_2L = 2 * self.PP_L
         self.MAX_STEER_ANGLE = 21
 
-        self.EDGE_MAX_POS = 0.70
+        self.EDGE_MAX_POS = 0.75
         self.EDGE_STEER = 0.0075   
 
         self.DEF_MIN_SPEED = 50
         self.DEF_MAX_SPEED = 275
         self.speed_OFF = 1.85
-        self.KP = 1 
-        self.KI = 5
-        self.KD = 0.1
 
 
         self.GEAR_MAX = 6
@@ -161,7 +158,7 @@ class Driver(object):
         else:   
         #
         # CONTROLO PID
-            pid = PID(0.1,0.001,3,targetSpeed)        #kp, ki, kd, ref
+            pid = PID(0.05,0.001,3,targetSpeed)        #kp, ki, kd, ref
             accel = pid(self.state.getSpeed())
             accel = self.state.clamp(accel,self.BRAKE_MAX,self.ACCEL_MAX)
             self.control.setCurrAccel(accel)
