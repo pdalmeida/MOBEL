@@ -156,32 +156,39 @@ class Driver(object):
             slippagePercent = frontWheelAvgSpeed / (rearWheelAvgSpeed+0.0001) * 100.0
             hasWheelSpin = slippagePercent < 85
         if hasWheelSpin:
-            accel = 0.5
+            accel = 0.25
             self.control.setCurrAccel(accel)
         else:   
         #
         # CONTROLO PID
-<<<<<<< HEAD
             pid = PID(self.KP,self.KI,self.KD,targetSpeed)        #kp, ki, kd, ref
-||||||| 1485825
-            pid = PID(0.05,0.001,3,targetSpeed)        #kp, ki, kd, ref
-=======
-            pid = PID(0.2,0.001,5,targetSpeed)        #kp, ki, kd, ref
->>>>>>> a49528e765bef10ec848684d3a29a105130c4834
             accel = pid(self.state.getSpeed())
             accel = self.state.clamp(accel,self.BRAKE_MAX,self.ACCEL_MAX)
             self.control.setCurrAccel(accel)
         
+        opp = self.state.getOpponents()
+        print(opp)
         if accel > 0.0:
-            self.control.setAccel(accel)
-            self.control.setBrake(0)
+            if (opp[17] < 50 or opp[18] < 50 or opp[19] < 50) and self.state.getSpeedX() > 50:
+                print("OPPONENT")
+                self.control.setAccel(0.0)
+                self.control.setBrake(0.0)
+            else:
+                self.control.setAccel(accel)
+                self.control.setBrake(0)
+                
         elif accel < 0.0:
-            self.control.setAccel(0)
-            self.control.setBrake(abs(accel))
+            #if (opp[16] < 50 or opp[17] < 50 or opp[18] < 50) and self.state.getSpeedX() > 50:
+               # self.control.setAccel(0.0)
+               # self.control.setBrake(0.0)
+            #else:
+                self.control.setAccel(0)
+                self.control.setBrake(abs(accel))
+         
         else:
             self.control.setAccel(0.0)
             self.control.setBrake(0.0)
-
+        
     def gear(self):
         
         rpm = self.state.getRpm()

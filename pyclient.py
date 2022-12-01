@@ -54,7 +54,7 @@ shutdownClient = False
 curEpisode = 0
 
 verbose = False
-
+    
 d = driver.Driver(arguments.stage)  
 
 while not shutdownClient:
@@ -82,7 +82,7 @@ while not shutdownClient:
         if buf.find('***identified***') >= 0:   
             print('Received: ', buf)
             break
-
+            
     currentStep = 0
     
     while True:
