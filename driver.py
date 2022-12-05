@@ -46,7 +46,7 @@ class Driver(object):
 
         self.DEF_MIN_SPEED = 50
         self.DEF_MAX_SPEED = 275
-        self.speed_OFF = 2
+        self.speed_OFF = 2.2
         self.KP = 0.05
         self.KI = 0.001
         self.KD = 3
@@ -103,13 +103,6 @@ class Driver(object):
         return self.control.toMsg()
     
     def steer(self):
-        '''
-        angle = self.state.angle
-        dist = self.state.trackPos
-        print(self.state.getTrack())
-        
-        self.control.setSteer((angle - dist*0.5)/self.steer_lock)
-        '''
 
         target_angle = self.computeTargetAngle()
         # alpha (a) = angle of longest sensor (... -20, -10, 0, 10, 20, ...)
@@ -167,21 +160,16 @@ class Driver(object):
             self.control.setCurrAccel(accel)
         
         opp = self.state.getOpponents()
-        print(opp)
+        #print(opp)
         if accel > 0.0:
             if (opp[17] < 50 or opp[18] < 50 or opp[19] < 50) and self.state.getSpeedX() > 50:
                 print("OPPONENT")
                 self.control.setAccel(0.0)
-                self.control.setBrake(0.0)
+                self.control.setBrake(0.2)
             else:
                 self.control.setAccel(accel)
-                self.control.setBrake(0)
-                
+                self.control.setBrake(0)            
         elif accel < 0.0:
-            #if (opp[16] < 50 or opp[17] < 50 or opp[18] < 50) and self.state.getSpeedX() > 50:
-               # self.control.setAccel(0.0)
-               # self.control.setBrake(0.0)
-            #else:
                 self.control.setAccel(0)
                 self.control.setBrake(abs(accel))
          
@@ -194,85 +182,44 @@ class Driver(object):
         rpm = self.state.getRpm()
         gear = self.state.getGear()
         accel = self.control.getAccel()
-        speed = self.state.getSpeedX()
 
         if gear == 1:
-            if rpm > 6000:
+            if rpm > 5500:
                 gear+=1
             elif rpm < 1000:
                 gear-=1
         elif gear == 2:
-            if rpm > 7000:
+            if rpm > 7500:
                 gear+=1
-            elif rpm < 1000:
+            elif rpm < 2000:
                 gear-=1                
         elif gear == 3:
-            if rpm > 7000:
+            if rpm > 7500:
                 gear+=1
-            elif rpm < 4000:
+            elif rpm < 4500:
                 gear-=1        
         elif gear == 4:
-            if rpm > 7000:
+            if rpm > 7500:
                 gear+=1
-            elif rpm < 4000:
+            elif rpm < 4500:
                 gear-=1
         elif gear == 5:
-            if rpm > 8500:
+            if rpm > 8000:
                 gear+=1
-            elif rpm < 4000:
+            elif rpm < 5000:
                 gear-=1
         elif gear == 6:
-            if rpm < 4000:
+            if rpm < 5000:
                 gear-=1
 
 
 
         if accel > 0.7 and rpm > 8000:
             gear += 1
-        elif accel < 0 and rpm < 4000:
+        elif accel < 0 and rpm < 4500:
             gear -= 1
 
         self.control.setGear(gear)
-        
-
-        '''
-        if self.prev_rpm == 0:
-            up = True
-        else:
-            if (self.prev_rpm - rpm) < 0:
-                up = True
-            else:
-                up = False
-        
-        if up and rpm > 8000:
-            gear += 1
-        
-        if not up and rpm < 4000:
-            gear -= 1
-        
-        self.control.setGear(gear)
-
-        '''
-        '''
-        accel = self.control.getAccel()
-        rpm = self.state.getRpm()
-        currAccel = self.control.getCurrAccel()
-        gear = self.control.getGear()
-
-        if accel > 0: #gas
-            accel = self.state.clamp(accel,0.0, currAccel + self.ACCEL_DELTA)
-            if gear == 0 or rpm > self.RPM_MAX:
-                gear+=1
-        elif accel < 0: #brake
-            accel = self.state.clamp(accel,currAccel + self.BRAKE_DELTA,0.0)
-            if rpm < self.RPM_MAX*0.75:
-                gear-=1          
-
-
-        gear = self.state.clamp(gear,1,self.GEAR_MAX)
-        self.control.setGear(gear)        
-        '''
-
         
     def onShutDown(self):
         pass
